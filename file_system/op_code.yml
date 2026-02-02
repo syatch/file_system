@@ -1,0 +1,15 @@
+op:
+  file_system_cp_inclusive:
+    script: copy_inclusive
+
+  file_system_cp_exclusive:
+    script: copy_exclusive
+
+  file_system_rm:
+    script: remove
+
+  file_system_zip:
+    script: zip
+
+  file_system_unzip:
+    script: unzip

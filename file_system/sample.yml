@@ -1,0 +1,57 @@
+file_system_cp_inclusive:
+  option:
+    source_dir: <source dir>
+    export_dir: <export dir>
+    include:
+      files:
+        - <target file>
+      folders:
+        - <target folder>
+
+file_system_cp_exclusive:
+  option:
+    source_dir: <source dir>
+    export_dir: <export dir>
+    exclude:
+      files:
+        - <target file>
+      folders:
+        - <target folder>
+
+file_system_rm:
+  option:
+    source_dir: <source dir>
+    remove:
+      files:
+        - <target file>
+      folders:
+        - <target folder>
+
+file_system_mod:
+  option:
+    source_dir: <source dir>
+    files:
+      - <target file>
+    from_str: <string>
+    to_str: <string>
+  # when replace lines
+  # from: |
+  #   <line 1>
+  #   <line 2>
+  # to: |
+  #   <line 1>
+  #   <line 2>
+  # need a blank line after lines
+
+file_system_zip:
+  option:
+    source_dir: <source dir>
+    export_dir: <export dir>
+    level: <compression level>
+
+file_system_unzip:
+  option:
+    source_dir: <source dir>
+    export_dir: <export dir>
+    zips:
+      - <zip>.zip
