@@ -1,7 +1,7 @@
 from pathlib import Path
 import zipfile
 
-from flowweave import FlowWeaveTask, Result
+from flowweave import FlowWeaveResult
 
 from .file_system import FileSystem
 
@@ -10,7 +10,7 @@ class Zip(FileSystem):
         self.level = 9
 
     def operation(self):
-        result = Result.SUCCESS
+        result = FlowWeaveResult.SUCCESS
         self.message(f"source : {self.source_dir}")
         self.message(f"export : {self.export_dir}")
 
@@ -48,6 +48,3 @@ class Zip(FileSystem):
                     zf.write(file, arcname=file.relative_to(src_path))
 
         return zip_path
-
-class Task(FlowWeaveTask):
-    runner = Zip

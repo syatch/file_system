@@ -1,8 +1,9 @@
+from enum import IntEnum
 from pathlib import Path
 import shutil
-from enum import IntEnum
+from typing import Tuple
 
-from flowweave import FlowWeaveTask, Result
+from flowweave import FlowWeaveResult
 
 from .file_system import FileSystem
 
@@ -15,7 +16,7 @@ class CopyInclusive(FileSystem):
         self.include = {}
 
     def operation(self):
-        result = Result.SUCCESS
+        result = FlowWeaveResult.SUCCESS
         self.message(f"source : {self.source_dir}")
         self.message(f"export : {self.export_dir}")
 
@@ -28,7 +29,7 @@ class CopyInclusive(FileSystem):
 
         return result
 
-    def get_target(self):
+    def get_target(self) -> Tuple[list, list]:
         files = self.include.get("files", [])
         folders = self.include.get("folders", [])
         self.message(f"include files : {files}")
@@ -75,6 +76,3 @@ class CopyInclusive(FileSystem):
 
                 elif mode == CopyMode.FOLDER:
                     shutil.copytree(path, dst_path, dirs_exist_ok=True)
-
-class Task(FlowWeaveTask):
-    runner = CopyInclusive

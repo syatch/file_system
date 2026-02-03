@@ -1,8 +1,9 @@
 from enum import IntEnum
 from pathlib import Path
 import shutil
+from typing import Tuple
 
-from flowweave import FlowWeaveTask, Result
+from flowweave import FlowWeaveResult
 
 from .file_system import FileSystem
 
@@ -17,7 +18,7 @@ class Remove(FileSystem):
         self.folders = None
 
     def operation(self):
-        result = Result.SUCCESS
+        result = FlowWeaveResult.SUCCESS
         self.message(f"source : {self.source_dir}")
 
         files, folders = self.get_target()
@@ -48,11 +49,10 @@ class Remove(FileSystem):
 
         return False
 
-    def get_target(self):
+    def get_target(self) -> Tuple[list, list]:
         files = self.remove.get("files", [])
         folders = self.remove.get("folders", [])
         self.message(f"remove files : {files}")
         self.message(f"remove folders : {folders}")
 
-class Task(FlowWeaveTask):
-    runner = Remove
+        return files, folders

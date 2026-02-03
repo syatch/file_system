@@ -1,7 +1,7 @@
 from pathlib import Path
 import zipfile
 
-from flowweave import FlowWeaveTask, Result
+from flowweave import FlowWeaveResult
 
 from .file_system import FileSystem
 
@@ -10,7 +10,7 @@ class Unzip(FileSystem):
         self.zips = None
 
     def operation(self):
-        result = Result.SUCCESS
+        result = FlowWeaveResult.SUCCESS
         self.message(f"source : {self.source_dir}")
         self.message(f"export : {self.export_dir}")
 
@@ -40,6 +40,3 @@ class Unzip(FileSystem):
             zf.extractall(dst_root)
 
         return dst_root
-
-class Task(FlowWeaveTask):
-    runner = Unzip

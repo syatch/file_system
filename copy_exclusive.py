@@ -1,8 +1,10 @@
+from enum import IntEnum
+import os
 from pathlib import Path
 import shutil
-from enum import IntEnum
+from typing import Tuple
 
-from flowweave import FlowWeaveTask, Result
+from flowweave import FlowWeaveResult
 
 from .file_system import FileSystem
 
@@ -15,7 +17,7 @@ class CopyExclusive(FileSystem):
         self.exclude = {}
 
     def operation(self):
-        result = Result.SUCCESS
+        result = FlowWeaveResult.SUCCESS
         self.message(f"source : {self.source_dir}")
         self.message(f"export : {self.export_dir}")
 
@@ -25,7 +27,7 @@ class CopyExclusive(FileSystem):
 
         return result
 
-    def get_target(self):
+    def get_target(self) -> Tuple[list, list]:
         files = self.exclude.get("files", [])
         folders = self.exclude.get("folders", [])
         self.message(f"exclude files : {files}")
@@ -34,45 +36,43 @@ class CopyExclusive(FileSystem):
         return files, folders
 
     def copy_not_matched(self, source_dir: str, export_dir: str,
-                        exclude_files: list[str], exclude_dirs: list[str]):
+                         exclude_files: list[str], exclude_dirs: list[str]):
         src_root = Path(source_dir)
         dst_root = Path(export_dir)
 
         def is_glob(p: str):
-            return any(ch in p for ch in ["*", "?", "["])
+            return any(ch in p for ch in "*?[")
 
         file_patterns = [(p, is_glob(p)) for p in exclude_files]
         dir_patterns  = [(p, is_glob(p)) for p in exclude_dirs]
 
         def match(rel_path: Path, patterns):
             for pat, glob_mode in patterns:
-                if glob_mode: # glob
+                if glob_mode:
                     if rel_path.match(pat):
                         return True
                 else:
-                    # exact match
-                    if rel_path.parts == (pat,):
+                    if rel_path.as_posix() == pat:
                         return True
             return False
 
-        def ignore_func(dir_path, names):
-            ignored = []
+        for root, dirs, files in os.walk(src_root):
+            root_path = Path(root)
+            rel_root = root_path.relative_to(src_root)
 
-            for name in names:
-                full_path = Path(dir_path) / name
-                rel_path = full_path.relative_to(src_root)
+            dirs[:] = [
+                d for d in dirs
+                if not match(rel_root / d, dir_patterns)
+            ]
 
-                if full_path.is_dir():
-                    if match(rel_path, dir_patterns):
-                        ignored.append(name)
+            target_dir = dst_root / rel_root
+            target_dir.mkdir(parents=True, exist_ok=True)
 
-                elif full_path.is_file():
-                    if match(rel_path, file_patterns):
-                        ignored.append(name)
+            for f in files:
+                rel_file = rel_root / f
+                if match(rel_file, file_patterns):
+                    continue
 
-            return ignored
-
-        shutil.copytree(src_root, dst_root, dirs_exist_ok=True, ignore=ignore_func)
-
-class Task(FlowWeaveTask):
-    runner = CopyExclusive
+                src_file = root_path / f
+                dst_file = target_dir / f
+                shutil.copy2(src_file, dst_file)

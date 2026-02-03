@@ -1,7 +1,7 @@
 
-from flowweave import FlowWeaveTaskRunner, Result, TaskData
+from flowweave import FlowWeaveTask, FlowWeaveResult
 
-class FileSystem(FlowWeaveTaskRunner):
+class FileSystem(FlowWeaveTask):
     def __init__(self, prev_future):
         self.prev_future = prev_future
         self.return_data = {}
@@ -23,7 +23,7 @@ class FileSystem(FlowWeaveTaskRunner):
         return result, self.return_data
 
     def operation(self):
-        return Result.SUCCESS
+        return FlowWeaveResult.SUCCESS
 
     def get_source_export_dir(self):
         if self.prev_future:

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from flowweave import FlowWeaveTask, Result
+from flowweave import FlowWeaveResult
 
 from .file_system import FileSystem
 
@@ -9,7 +9,7 @@ class Replace(FileSystem):
         self.replace = None
 
     def operation(self):
-        result = Result.SUCCESS
+        result = FlowWeaveResult.SUCCESS
         self.message(f"source : {self.source_dir}")
 
         files = self.replace.get("files", [])
@@ -38,6 +38,3 @@ class Replace(FileSystem):
         text = text.replace(from_str, to_str)
         target.write_text(text, encoding=encoding)
         return True
-
-class Task(FlowWeaveTask):
-    runner = Replace
