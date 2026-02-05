@@ -10,24 +10,26 @@ from .lock_manager import get_path_lock
 
 class Zip(FileSystem):
     def operation_init(self):
-        self.level = 9
+        self.zip = {}
 
     def operation(self):
         result = FlowWeaveResult.SUCCESS
         self.message(f"source : {self.source_dir}")
         self.message(f"export : {self.export_dir}")
 
+        compress_level = self.zip.get("level", 5)
+
         for source_dir in self.source_dir:
             for export_dir in self.export_dir:
-                zip_path = self.zip_source_dir(source_dir, export_dir, self.level)
-                self.message(f"zip : {zip_path}")
+                self.message(f"zip : {source_dir} - > export_dir")
+                self.zip_source_dir(source_dir, export_dir, compress_level)
 
         return result
 
     def zip_source_dir(self,
                        source_dir: str,
                        export_dir: str,
-                       compression_level: int = 9) -> Path:
+                       compression_level: int = 9):
         src_path = Path(source_dir).resolve()
         if not src_path.exists() or not src_path.is_dir():
             raise FileNotFoundError(f"{src_path} is not a valid directory")

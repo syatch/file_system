@@ -35,24 +35,26 @@ file_system_rep:
         - <target file>
       from_str: <string>
       to_str: <string>
-  # when replace lines
-  # from: |
-  #   <line 1>
-  #   <line 2>
-  # to: |
-  #   <line 1>
-  #   <line 2>
-  # need a blank line after lines
+      # when replace lines
+      # from_str: |
+      #   <line 1>
+      #   <line 2>
+      # to_str: |
+      #   <line 1>
+      #   <line 2>
+      # need a blank line after lines
 
 file_system_zip:
   option:
     source_dir: <source dir>
     export_dir: <export dir>
-    level: <compression level>
+    zip:
+      level: <compression level>
 
 file_system_unzip:
   option:
     source_dir: <source dir>
     export_dir: <export dir>
-    zips:
-      - <zip>.zip
+    unzip:
+      zips:
+        - <zip>.zip

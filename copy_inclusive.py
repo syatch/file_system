@@ -24,6 +24,7 @@ class CopyInclusive(FileSystem):
         files, folders = self.get_target()
         for source_dir in self.source_dir:
             for export_dir in self.export_dir:
+                self.message(f"Inclusive Copy: {source_dir} -> {export_dir}")
                 for file in files:
                     self.copy_glob_matched(source_dir, export_dir, file, CopyMode.FILE)
                 for folder in folders:

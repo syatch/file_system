@@ -20,9 +20,10 @@ class Replace(FileSystem):
         to_str = self.replace.get("to_str")
 
         for source_dir in self.source_dir:
+            self.message(f"Replace: {source_dir}")
             for file in files:
+                self.message(f"- file: {file}")
                 self.replace_in_file(source_dir, file, from_str, to_str)
-                self.message(f"modify : {file}")
 
         return result
 

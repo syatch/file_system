@@ -15,18 +15,19 @@ class RemoveMode(IntEnum):
 class Remove(FileSystem):
     def operation_init(self):
         self.remove = {}
-        self.files = None
-        self.folders = None
 
     def operation(self):
         result = FlowWeaveResult.SUCCESS
         self.message(f"source : {self.source_dir}")
 
         for source_dir in self.source_dir:
+            self.message(f"Remove: {source_dir}")
             files, folders = self.get_target()
             for file in files:
+                self.message(f"- file: {file}")
                 self.delete_path_in_source(source_dir, file, RemoveMode.FILE)
             for folder in folders:
+                self.message(f"- folder: {folder}")
                 self.delete_path_in_source(source_dir, folder, RemoveMode.FOLDER)
 
         return result

@@ -25,6 +25,7 @@ class CopyExclusive(FileSystem):
         files, folders = self.get_target()
         for source_dir in self.source_dir:
             for export_dir in self.export_dir:
+                self.message(f"Exclusive Copy: {source_dir} -> {export_dir}")
                 self.copy_not_matched(source_dir, export_dir, files, folders)
 
         return result
