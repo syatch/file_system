@@ -1,8 +1,6 @@
-import copy
 from enum import IntEnum
 from pathlib import Path
 import shutil
-from typing import Tuple
 
 from flowweave import FlowWeaveResult
 
@@ -33,8 +31,10 @@ class CopyInclusive(FileSystem):
             for export_dir in self.export_dir:
                 self.message(f"Inclusive Copy: {source_dir} -> {export_dir}")
                 for file in self.include.files:
+                    self.message(f"File: {file}")
                     self.copy_glob_matched(source_dir, export_dir, file, CopyMode.FILE)
                 for folder in self.include.folders:
+                    self.message(f"File: {folder}")
                     self.copy_glob_matched(source_dir, export_dir, folder, CopyMode.FOLDER)
 
         return result

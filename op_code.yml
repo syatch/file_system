@@ -8,6 +8,9 @@ op:
   file_system_rm:
     script: remove
 
+  file_system_rename:
+    script: rename
+
   file_system_rep:
     script: replace
 

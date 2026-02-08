@@ -1,3 +1,8 @@
+### pattern ###
+# **/<name> : <name> at any depth under source_dir
+# <name>    : <name> at the top level of source_dir
+# **/*      : all items recursively under source_dir
+
 file_system_cp_inclusive:
   option:
     source_dir: <source dir>
@@ -26,6 +31,23 @@ file_system_rm:
         - <target file>
       folders:
         - <target folder>
+
+file_system_rename:
+  option:
+    source_dir: <source dir>
+    rename:
+      files:
+        - <target file pattern>:
+            from_str: <str>
+            to_str: <str>
+      folders:
+        - <target folder pattern>:
+            from_str: <str>
+            to_str: <str>
+      ext:
+        - <target file pattern>:
+            from_str: <ext>
+            to_str: <ext>
 
 file_system_rep:
   option:

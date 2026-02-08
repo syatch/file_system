@@ -22,10 +22,9 @@ class Replace(FileSystem):
 
         self.prepare_options()
 
-        files = files if isinstance(files, list) else [files]
         for source_dir in self.source_dir:
             self.message(f"Replace: {source_dir}")
-            for file in files:
+            for file in self.replace.files:
                 self.message(f"- file: {file}")
                 self.replace_in_file(source_dir, file, self.replace.from_str, self.replace.to_str)
 
