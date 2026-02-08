@@ -1,3 +1,4 @@
+import copy
 from enum import IntEnum
 from pathlib import Path
 import shutil
@@ -45,7 +46,8 @@ class CopyInclusive(FileSystem):
 
         lock = get_path_lock(dst_root)
         with lock:
-            is_glob = any(ch in pattern for ch in ["*", "?", "["])
+            is_recursive = pattern.startswith("**/")
+            is_glob = is_recursive or any(ch in pattern for ch in ["*", "?", "["])
 
             if not is_glob:
                 target = src_root / pattern
@@ -60,19 +62,27 @@ class CopyInclusive(FileSystem):
                     shutil.copytree(target, dst_path, dirs_exist_ok=True)
                 return
 
-            adjusted_pattern = pattern
-            if pattern.startswith("**/"):
-                adjusted_pattern = f"*/*{pattern[3:]}"
+            if is_recursive:
+                search_pattern = pattern[3:]
+                paths = src_root.rglob(search_pattern)
+            else:
+                paths = src_root.glob(pattern)
 
-            for path in src_root.rglob("*"):
-                if (mode == CopyMode.FILE and not path.is_file()) or (mode == CopyMode.FOLDER and not path.is_dir()):
+            paths = list(paths)
+            paths.sort(key=lambda p: len(p.parts))
+            for path in paths:
+                if (mode == CopyMode.FILE and not path.is_file()) or \
+                (mode == CopyMode.FOLDER and not path.is_dir()):
+                    continue
+
+                if (mode == CopyMode.FOLDER) and (path.parent in paths):
                     continue
 
                 rel_path = path.relative_to(src_root)
-                if rel_path.match(pattern) or rel_path.match(adjusted_pattern):
-                    dst_path = dst_root / rel_path
-                    if mode == CopyMode.FILE:
-                        dst_path.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(path, dst_path)
-                    elif mode == CopyMode.FOLDER:
-                        shutil.copytree(path, dst_path, dirs_exist_ok=True)
+                dst_path = dst_root / rel_path
+
+                if mode == CopyMode.FILE:
+                    dst_path.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(path, dst_path)
+                else:
+                    shutil.copytree(path, dst_path, dirs_exist_ok=True)
