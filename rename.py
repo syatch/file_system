@@ -5,16 +5,11 @@ from flowweave import FlowWeaveResult
 from .file_system import FileSystem
 from .lock_manager import get_path_lock
 
-class RenameStr():
-    def __init__(self):
-        self.from_str = ""
-        self.to_str = ""
-
 class RenameCfg():
     def __init__(self):
-        self.files = list[dict(str, RenameStr)]
-        self.folders = list[dict(str, RenameStr)]
-        self.ext = list[dict(str, RenameStr)]
+        self.files = []
+        self.folders = []
+        self.ext = []
 
 class Rename(FileSystem):
     def operation_init(self):
@@ -41,7 +36,8 @@ class Rename(FileSystem):
                     if not path.is_file():
                         continue
 
-                    new_name = path.name.replace(cfg.from_str, cfg.to_str)
+                    from_str, to_str = self._get_from_to(cfg)
+                    new_name = path.name.replace(from_str, to_str)
                     if new_name != path.name:
                         path.rename(path.with_name(new_name))
 
@@ -58,7 +54,8 @@ class Rename(FileSystem):
                     if not path.is_dir():
                         continue
 
-                    new_name = path.name.replace(cfg.from_str, cfg.to_str)
+                    from_str, to_str = self._get_from_to(cfg)
+                    new_name = path.name.replace(from_str, to_str)
                     if new_name != path.name:
                         path.rename(path.with_name(new_name))
 
@@ -69,8 +66,23 @@ class Rename(FileSystem):
                     if not path.is_file():
                         continue
 
-                    if path.suffix == cfg.from_str:
-                        path.rename(path.with_suffix(cfg.to_str))
+                    from_str, to_str = self._get_from_to(cfg)
+                    from_ext = from_str.lstrip(".")
+                    if path.suffix.lstrip(".") == from_ext:
+                        to_ext = to_str if to_str.startswith(".") else f".{to_str}"
+                        path.rename(path.with_suffix(to_ext))
+
+    @staticmethod
+    def _get_from_to(cfg):
+        from_str = cfg.get("from_str", None)
+        if None == from_str:
+            raise Exception(f"Failed to get from_str of {cfg}")
+
+        to_str = cfg.get("to_str", None)
+        if None == to_str:
+            raise Exception(f"Failed to get to_str of {cfg}")
+
+        return from_str, to_str
 
     @staticmethod
     def _iter_targets(root: Path, pattern: str):
